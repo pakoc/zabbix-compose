@@ -1,0 +1,51 @@
+version: '3'
+services:
+
+  zabbix-mysql:
+    restart: always
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbix 
+      - MYSQL_PASSWORD=zabbix
+      - MYSQL_ROOT_PASSWORD=root
+  
+  zabbix-server:
+    restart: always
+    image: zabbix/zabbix-server-mysql:ubuntu-4.2-latest
+    ports:
+      - "10050"
+      - "10051"
+    environment:
+      - DB_SERVER_HOST=zabbix-mysql
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD=zabbix
+    links:
+      - zabbix-mysql
+ 
+  zabbix-frontend:
+    restart: always
+    image: zabbix/zabbix-web-nginx-mysql:ubuntu-4.2-latest
+    ports:
+      - "8091:80"
+    links:
+      - zabbix-server
+      - zabbix-mysql
+      - zabbix-agent
+    environment:
+      - DB_SERVER_HOST=zabbix-mysql
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD=zabbix
+      - PHP_TZ=Europe/Moscow
+  
+  zabbix-agent:
+    restart: always
+    image: zabbix/zabbix-agent:latest
+    ports:
+      - "10050"
+    links:
+      - zabbix-server
+    environment:
+      - ZBX_SERVER_HOST=zabbix-server

@@ -4,6 +4,8 @@ services:
   zabbix-mysql:
     restart: always
     image: mysql:5.7
+    volumes:
+      - ./data/mysql:/var/lib/mysql
     ports:
       - "3306"
     environment:
@@ -15,9 +17,14 @@ services:
   zabbix-server:
     restart: always
     image: zabbix/zabbix-server-mysql:ubuntu-4.2-latest
+    volumes:
+      - ./data/zabbix-server/var/lib/zabbix:/var/lib/zabbix
+      - ./data/zabbix-server/etc/zabbix:/etc/zabbix
     ports:
       - "10050"
       - "10051"
+    depends_on:
+      - zabbix-mysql
     environment:
       - DB_SERVER_HOST=zabbix-mysql
       - MYSQL_USER=zabbix
@@ -28,8 +35,12 @@ services:
   zabbix-frontend:
     restart: always
     image: zabbix/zabbix-web-nginx-mysql:ubuntu-4.2-latest
+    volumes:
+      - ./data/zabbix-frontend/var/log/nginx:/var/log/nginx
     ports:
-      - "8091:80"
+      - "8092:80"
+    depends_on:
+      - zabbix-mysql
     links:
       - zabbix-server
       - zabbix-mysql

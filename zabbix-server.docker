@@ -1,0 +1,5 @@
+ 
+FROM zabbix/zabbix-server-mysql:ubuntu-4.2-latest
+
+RUN apt-get update
+RUN apt-get install -y curl

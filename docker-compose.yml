@@ -16,9 +16,12 @@ services:
   
   zabbix-server:
     restart: always
-    image: zabbix/zabbix-server-mysql:ubuntu-4.2-latest
+    build:  
+      context: ./
+      dockerfile: zabbix-server.docker
     volumes:
       - ./data/var/lib/zabbix:/var/lib/zabbix
+      - ./data/usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
     ports:
       - "10050"
       - "10051"

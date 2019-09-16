@@ -5,7 +5,7 @@ services:
     restart: always
     image: mysql:5.7
     volumes:
-      - ./data/var/lib/mysql:/var/lib/mysql
+      - ./data/zabbix-mysql/var/lib/mysql:/var/lib/mysql
     ports:
       - "3306"
     environment:
@@ -20,8 +20,11 @@ services:
       context: ./
       dockerfile: zabbix-server.docker
     volumes:
-      - ./data/var/lib/zabbix:/var/lib/zabbix
-      - ./data/usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
+      - ./data/zabbix-server/var/lib/zabbix:/var/lib/zabbix
+      - ./data/zabbix-server/usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
+      - ./data/zabbix-server/var/lib/zabbix/enc:/var/lib/zabbix/enc
+      - ./data/zabbix-server/var/lib/zabbix/modules:/var/lib/zabbix/modules
+      - ./data/zabbix-server/etc/zabbix/zabbix_agentd.d:/etc/zabbix/zabbix_agentd.d
     ports:
       - "10050"
       - "10051"
@@ -38,7 +41,7 @@ services:
     restart: always
     image: zabbix/zabbix-web-nginx-mysql:ubuntu-4.2-latest
     volumes:
-      - ./data/var/log/nginx:/var/log/nginx
+      - ./data/zabbix-frontend/var/log/nginx:/var/log/nginx
     ports:
       - "8092:80"
     depends_on:
